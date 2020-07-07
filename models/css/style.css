@@ -296,7 +296,7 @@ p {
 }
 .v-FashionLook {
   padding: 48px 0;
-  background: url("/img/bg2.jpg") no-repeat top;
+  background: url("../img/bg2.jpg") no-repeat top;
   background-size: cover;
 }
 .v-FashionLook .container {
@@ -355,7 +355,7 @@ p {
 }
 .v-Newsletter {
   padding: 48px 0;
-  background: url("/img/bg3.jpg");
+  background: url("../img/bg3.jpg");
   background-size: cover;
 }
 .v-Newsletter input {
