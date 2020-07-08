@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="{CHARSET}">
+		<title></title>
+		<style>
+			*{
+				margin: 0;
+				padding: 0;
+			}
+			.score{
+				margin-left:50% ;
+				transform: translateX(-50%)
+			}
+			.box{
+				width: 400px;
+				height: 400px;
+				background-color:aqua;
+				border: 1px solid mediumaquamarine;
+				margin: 100px auto;
+				position: relative;
+				overflow: hidden;
+			}
+			.box .gamebox{
+				top: -100px;
+				left: 0;
+				position: absolute;
+			}
+			.box .gamebox .row{
+				height: 100px;
+				width: 400px;
+			}
+			.box .gamebox .row div{
+				width: 98px;
+				height: 98px;
+				float: left;
+				background-color: white;
+				border: 1px solid aqua;
+			}
+			.box .gamebox .row .black{
+				background-color: black;
+			}
+		</style>
+		<script type="text/javascript" src="js/animate_scroll.js"></script>
+	</head>
+	<body>
+		<input type="text" class="score" disabled="disabled" value="0" />
+		<div class="box">			
+			<div class="gamebox">
+				<div class="row">
+					<div class="black"></div>
+					<div></div>
+					<div></div>
+					<div></div>
+				</div>
+				<div class="row">
+					<div></div>
+					<div class="black"></div>
+					<div></div>
+					<div></div>
+				</div>
+				<div class="row">
+					<div></div>
+					<div></div>
+					<div class="black"></div>
+					<div></div>
+				</div>
+				<div class="row">
+					<div></div>
+					<div></div>
+					<div></div>
+					<div class="black"></div>
+				</div>
+			</div>
+		</div>
+		<script>
+			var gamebox = document.querySelector('.gamebox')
+			var score = document.querySelector('.score')
+			var point = 0;
+			var speed = 0.5;
+			var flag = true;
+					
+			var timer =window.setInterval(function(){
+				
+				gamebox.style.top = gamebox.offsetTop + speed + 'px'
+				
+				if( gamebox.offsetTop >= 0){
+					if(gamebox.lastElementChild.getAttribute('clickState')==null){
+						flag = false;
+						window.clearInterval(timer)
+						alert("你输了")
+					}
+					
+					var row = document.createElement('div')
+					row.className = 'row'
+					
+					var randomNum = Math.floor(Math.random()*4);
+					for(var i = 0 ; i < 4 ;i++){
+						var div = document.createElement('div')
+						if(i == randomNum){
+							div.className = 'black'
+						}
+						row.appendChild(div)
+					}
+					gamebox.insertBefore(row,gamebox.children[0])
+					gamebox.style.top = "-100px";
+				}
+				
+				if(gamebox.children.length > 5){
+					gamebox.lastElementChild.remove();
+				}
+				
+			},15)
+			
+			gamebox.onclick = function(e){
+				var e = e || window.event;
+				
+				if(flag){
+					if(e.target.className){
+						e.target.removeAttribute('class')
+						point++;
+						if(point % 5 == 0){
+							if(speed < 5){
+								speed += 0.2
+							}
+						}
+						score.value = point;
+						e.target.parentNode.setAttribute('clickState',true)
+						//console.log()
+					}else{
+						flag = false
+						window.clearInterval(timer)
+						alert("你输了")
+					}
+				}else{
+					alert("你输了")
+				}
+				
+			}
+		</script>
+	</body>
+</html>

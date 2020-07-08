@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://cdn.staticfile.org/jquery/1.12.4/jquery.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        .box {
+            width: 600px;
+            height: 600px;
+            border: 1px solid black;
+            margin: 10px auto;
+        }
+
+        .left {
+            width: 200px;
+            height: 200px;
+            background-color: red;
+            float: left;
+            position: relative;
+        }
+
+        .left img {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        .mask {
+            width: 100px;
+            height: 100px;
+            /* background-color: rgb(255, 0, 0, 0.5); */
+            z-index: 10;
+            border-radius: 50%;
+            position: absolute;
+            background-image: url('img/0001.png');
+            background-size: 800px 800px;
+            border: 1px solid aqua;
+            /* opacity: 0.3; */
+            background-repeat: no-repeat;
+            box-sizing: border-box;
+            display: none;
+        }
+
+        .right {
+            width: 400px;
+            height: 400px;
+            background-color: yellow;
+            float: left;
+            position: relative;
+            cursor: crosshair;
+        }
+
+        .right img {
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="box">
+        <div class="left">
+            <div class="mask"></div>
+            <img src="./img/0002.png" alt="">
+        </div>
+        <div class="right">
+            <div class="mask"></div>
+            <img src="./img/0001.png" alt="">
+        </div>
+
+    </div>
+    <script>
+        $('.right').mousemove(function (e) {
+            var e = e || window.event
+            //鼠标在屏幕上的位置
+            //console.log(e.pageX,e.pageX) 
+            //鼠标在.left的相对位置
+            $(this).find('.mask').show()
+            var x = e.pageX - $(this).offset().left
+            var y = e.pageY - $(this).offset().top
+            //console.log(x, y)
+            //限制x和y的位置
+            if (x < 0 || x > $(this).width() || y < 0 || (y > $(this).height())) {
+                $(this).find('.mask').hide()
+            }
+            //设置遮罩层随着鼠标移动
+            $(this).find('.mask').css({
+                left: x - parseInt($('.mask').css('width')) / 2,
+                top: y - parseInt($('.mask').css('height')) / 2,
+                backgroundPositionX: (-x) * 2 + parseInt($('.mask').css('width')) / 2,
+                backgroundPositionY: (-y) * 2 + parseInt($('.mask').css('height')) / 2
+            })
+        })
+
+        $('.right').mouseout(function () {
+            console.log("out!")
+        })
+        //封装成方法
+        function move(element,size) {
+            $(element).mousemove(function (e) {
+                var e = e || window.event
+                //设置相对应mask的大小
+                $(this).find('.mask').css({
+                    backgroundSize : $(this).width() * size,
+                    backgroundImage : "url("+ $(this).find('img').attr('src') +")"
+                })
+                //鼠标在屏幕上的位置
+
+                //鼠标在.left的相对位置
+                $(this).find('.mask').show()
+                var x = e.pageX - $(this).offset().left
+                var y = e.pageY - $(this).offset().top
+
+                
+                //限制x和y的位置
+                if (x < 0 || x > $(this).width() || y < 0 || (y > $(this).height())) {
+                    $(this).find('.mask').hide()
+                }
+                
+                //设置遮罩层随着鼠标移动
+                $(this).find('.mask').css({
+                    left: x - parseInt($(this).find('.mask').css('width')) / 2,
+                    top: y - parseInt($(this).find('.mask').css('height')) / 2,
+                    backgroundPositionX: (-x) * size + parseInt($(this).find('.mask').css('width')) / 2,
+                    backgroundPositionY: (-y) * size + parseInt($(this).find('.mask').css('height')) / 2
+                })
+            })
+        }
+        //move($('.left'),2)
+
+        //挂载到jquery
+        $.fn.move = function(size){
+            $(this).mousemove(function (e) {
+                var e = e || window.event
+                //设置相对应mask的大小
+                $(this).find('.mask').css({
+                    backgroundSize : $(this).width() * size,
+                    backgroundImage : "url("+ $(this).find('img').attr('src') +")"
+                })
+                //鼠标在屏幕上的位置
+
+                //鼠标在.left的相对位置
+                $(this).find('.mask').show()
+                var x = e.pageX - $(this).offset().left
+                var y = e.pageY - $(this).offset().top
+
+                
+                //限制x和y的位置
+                if (x < 0 || x > $(this).width() || y < 0 || (y > $(this).height())) {
+                    $(this).find('.mask').hide()
+                }
+                
+                //设置遮罩层随着鼠标移动
+                $(this).find('.mask').css({
+                    left: x - parseInt($(this).find('.mask').css('width')) / 2,
+                    top: y - parseInt($(this).find('.mask').css('height')) / 2,
+                    backgroundPositionX: (-x) * size + parseInt($(this).find('.mask').css('width')) / 2,
+                    backgroundPositionY: (-y) * size + parseInt($(this).find('.mask').css('height')) / 2
+                })
+            })
+        }
+        $('.left').move(10)
+    </script>
+</body>
+
+</html>

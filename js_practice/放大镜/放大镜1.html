@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+        }
+        li{
+            list-style: none;
+        }
+
+        .left{
+            display: inline-block;
+            width: 100px;
+            height: 500px;
+           /*  border: 1px solid red; */
+            vertical-align: top;
+        }
+
+        .left ul li{
+            display: inline-block;
+        }
+        .left div{
+            width: 88px;
+            height: 88px;
+            border: 2px solid transparent;
+            margin-bottom: 10px;
+        }
+
+        .left ul li .select{
+            border: 2px solid red;
+        }
+        .left div img{
+            /* display: inline-block; */
+            width: 88px;
+            height: 88px;
+        }
+        .mid{
+            display: inline-block;
+            width: 500px;
+            height: 500px;
+            border: 1px solid black;
+            position:relative;
+        }
+        .mid img{
+            display: block;
+            width: 500px;
+            height: 500px;
+        }
+        .mid .mask{
+            /* width: 250px;
+            height: 250px; */
+            position:absolute;
+            top: 0;
+            left: 0;
+            background-color: rgba(0, 255, 255, 0.5);
+            display: none;
+        }
+        .right{
+            display: none;
+            width: 500px;
+            height: 500px;
+            border: 1px solid black;
+            background: url("img/0001.png") no-repeat;
+            /* background-size: 400% ; */
+        }
+        .num{
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="left">
+        <ul>
+            <li>
+                <div class="select"><img src="img/0001.png"></div>
+            </li>
+            <li>
+                <div><img src="img/0002.png"></div>
+            </li>
+            <li>
+                <div><img src="img/0003.png"></div>
+            </li>
+            <li>
+                <div><img src="img/0004.png"></div>
+            </li>
+            <li>
+                <div><img src="img/0005.png"></div>
+            </li>
+        </ul>
+    </div>
+    <div class="mid">
+        <img src="img/0001.png">
+        <div class="mask"></div>
+    </div>
+    <div class="right">
+
+    </div>
+    <input type="text" class="num">请输入需要的倍数(默认2倍)
+    <script>
+        var left_div = document.querySelectorAll('.left div')
+        var mid_div = document.querySelector(".mid")
+        var mid_mask = document.querySelector(".mid .mask")
+        var right_div = document.querySelector('.right')
+        var num = document.querySelector('.num')
+        var beishu = 2;
+        for(var i = 0 ; i < left_div.length;i++){
+            left_div[i].setAttribute('data-index',i+1);
+            left_div[i].onclick = function(){
+                for(var j = 0 ; j < left_div.length;j++){
+                    left_div[j].className = ""
+                }
+                this.className = "select"
+                mid_div.children[0].src = "img/000"+this.getAttribute('data-index')+".png"
+                right_div.style.backgroundImage = "url(img/000"+this.getAttribute('data-index')+".png)"
+            }
+        }
+
+        mid_div.onmouseover = function(){
+            mid_mask.style.width = 500/beishu + 'px';
+            mid_mask.style.height = 500/beishu + 'px';
+            
+            right_div.style.backgroundSize =  beishu + "00%"
+
+            console.log(right_div.style.backgroundSiz)
+            mid_mask.style.display = 'block'
+            right_div.style.display = 'inline-block'
+        }
+
+        mid_div.onmouseout = function(){
+            mid_mask.style.display = 'none'
+            right_div.style.display = 'none'
+        }
+
+        mid_div.onmousemove = function (e) { 
+            var e = e || window.event;
+            /* console.log(e.pageX-mid_div.offsetLeft,e.pageY-mid_div.offsetTop) */
+            var x = e.pageX - mid_div.offsetLeft;
+            var y = e.pageY - mid_div.offsetTop;
+            if(x <= mid_mask.offsetHeight/2) x = mid_mask.offsetHeight/2;
+            if(y <= mid_mask.offsetHeight/2) y = mid_mask.offsetHeight/2;
+            if(x >= 500 - mid_mask.offsetHeight/2) x = 500 - mid_mask.offsetHeight/2;
+            if(y >= 500 - mid_mask.offsetHeight/2) y = 500 - mid_mask.offsetHeight/2;
+
+            mid_mask.style.left = x - mid_mask.offsetHeight/2 + 'px';
+            mid_mask.style.top = y - mid_mask.offsetWidth/2 + 'px';
+            
+            right_div.style.backgroundPositionX = -(x - mid_mask.offsetHeight/2)*beishu + "px";
+            right_div.style.backgroundPositionY = -(y - mid_mask.offsetWidth/2)*beishu + "px";
+        }
+
+        num.onblur = function(){
+            beishu = Number(num.value)
+        }
+    </script>
+</body>
+</html>

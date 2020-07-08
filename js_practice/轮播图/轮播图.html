@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="{CHARSET}">
+		<title></title>
+		<style>
+			*{
+				margin: 0;
+				padding: 0;
+			}
+			li{
+				list-style: none;
+			}
+			.w{
+				width: 1200px;
+				margin: 0 auto;
+			}
+			.banner{
+				margin-top: 30px;
+				position: relative;
+				height: 400px;
+				/*overflow: hidden;*/
+			}
+			
+			.banner ul:first-child {
+				position: absolute;
+				width: 600%;
+				top:0;
+				left: 0;
+				/*width: 7200px;*/
+			}
+			.banner ul:first-child li{
+				float: left;
+			}
+			.arrow_left{
+				position: absolute;
+				left: 0;
+				top: 50%;
+				transform: translateY(-50%);
+				display: none;
+			}
+			.arrow_right{
+				position: absolute;
+				right: 0;
+				top: 50%;
+				transform: translateY(-50%);
+				display: none;
+				cursor: hand;
+			}
+			
+			.banner ul:last-child {
+				position: absolute;
+				bottom: 20px;
+				left: 50%;
+				transform: translateX(-50%);
+			}
+			.banner ul:last-child li{
+				width: 10px;
+				height: 10px;
+				border-radius: 50%;
+				margin-right: 10px;
+				background-color: rgba(255,255,255,0.8);
+				
+				float: left;
+			}
+			.banner ul:last-child .li_change{
+				width: 20px;
+				border-radius: 10px;
+			}
+			.banner ul:last-child li:last-child{
+				margin-right: 0;
+			}
+		</style>
+		<script type="text/javascript" src="js/animate.js"></script>
+	</head>
+	<body>
+		<div class="banner w">
+			<!--ul>li*6>a[href="#"]>img[src="images/banner0$.jpg"]-->
+			<ul >
+				<li><a href="#"><img src="images/banner01.jpg" alt="" /></a></li>
+				<li><a href="#"><img src="images/banner02.jpg" alt="" /></a></li>
+				<li><a href="#"><img src="images/banner03.jpg" alt="" /></a></li>
+				<li><a href="#"><img src="images/banner04.jpg" alt="" /></a></li>
+				<li><a href="#"><img src="images/banner05.jpg" alt="" /></a></li>
+				<li><a href="#"><img src="images/banner06.jpg" alt="" /></a></li>
+				<!--<li><a href="#"><img src="images/banner01.jpg" alt="" /></a></li>-->
+			</ul>
+			
+			<img src="images/prev.png" class="arrow_left"/>
+			<img src="images/next.png" class="arrow_right"/>
+			
+			<ul>
+				
+			</ul>
+		</div>
+		<script>
+			var box = document.querySelector('.banner')
+			var boxWidth = box.offsetWidth;
+			var arrow_left = document.querySelector('.arrow_left')
+			var arrow_right = document.querySelector('.arrow_right')
+			var ul = document.querySelectorAll('ul')
+			var li1 = document.querySelectorAll('ul:first-child li')
+			//鼠标移入显示箭头
+			box.onmouseover = function(){
+				arrow_left.style.display = 'block';
+				arrow_right.style.display = 'block';
+				clearInterval(timer)
+				window.clearInterval(timer)
+				timer=null;
+			}
+			
+			box.onmouseout = function(){
+				arrow_left.style.display = 'none';
+				arrow_right.style.display = 'none';
+				if(timer==null){
+					timer = window.setInterval(function(){
+						arrow_right.click();
+					},1000)
+				}
+			}
+
+			//动态生成小点点
+			
+			for(var i = 0 ;i < ul[0].children.length;i++){
+				var li = document.createElement('li')
+				if(i == 0 ){
+					li.className = "li_change"					
+				}
+				ul[1].appendChild(li)
+			}
+			//添加小点点点击事件
+			var li2 = document.querySelectorAll('ul:last-child li')
+			for(var i = 0 ; i < li2.length;i++){
+				li2[i].setAttribute('data-index',i)
+				li2[i].onclick = function(){
+					for(var j = 0 ;j < li2.length;j++){
+						li2[j].className = '';
+					}
+					this.className = "li_change"
+					//切换到相对应的图片
+					console.log()
+					animate(ul[0],-this.getAttribute('data-index')*boxWidth);
+					num = this.getAttribute('data-index');
+					yuandian = this.getAttribute('data-index');
+				}
+				
+			}
+			//左右箭头点击事件
+			var num = 0;
+			var yuandian = 0;
+			var flag = true;
+			//节流阀
+			arrow_left.onclick = function(){
+				if(flag==true){
+					flag = false
+					if(num == 0){
+						ul[0].style.left = -(ul[0].children.length-1)*boxWidth+'px';
+						num = ul[0].children.length-1;
+					}
+					num --;
+					console.log(num)
+					animate(ul[0],-boxWidth*num,function(){
+						flag = true;
+					})
+					
+					yuandian --;
+					for(var j = 0 ;j < li2.length;j++){
+						li2[j].className = '';
+					}
+					if(yuandian == 0 || yuandian == -1){
+						yuandian = ul[0].children.length-1;
+					}
+					ul[1].children[yuandian-1].className = "li_change"
+				}
+			}
+			
+			arrow_right.onclick = function(){
+				if(flag == true){
+					flag = false
+					console.log(num)
+					if(num == ul[0].children.length-1){
+						ul[0].style.left = 0;
+						num = 0;
+					}
+					num ++;
+					console.log(num)
+					animate(ul[0],-boxWidth*num,function(){
+						flag = true;
+					})
+					
+					yuandian ++;
+					for(var j = 0 ;j < li2.length;j++){
+						li2[j].className = '';
+					}
+					if(yuandian == ul[1].children.length){
+						yuandian = 0;
+					}
+					ul[1].children[yuandian].className = "li_change"
+				}
+			}
+			
+			//kelong
+			var firstLi = ul[0].children[0];
+			var firstLi_clone = firstLi.cloneNode( true )
+			ul[0].appendChild(firstLi_clone)
+			ul[0].style.width = ul[0].children.length*100 +"%"
+			//封装排他函数
+			function paita(obj){
+				for(var j = 0 ;j < obj.length;j++){
+					obj[j].className = '';
+				}
+			}
+			//自动播放
+			var timer = window.setInterval(function(){
+				arrow_right.click();
+			},1000)
+		</script>
+	</body>
+</html>

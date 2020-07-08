@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="{CHARSET}">
+		<title></title>
+		<style>
+			*{
+				margin: 0;
+				padding: 0;
+			}
+			.top{
+				margin:0 auto;
+				width: 250px;
+				height: 100px;
+				text-align: center;
+				/*background-color: red;*/
+				
+			}
+			.sign{
+				text-align: center;
+				width: 500px;height: 300px;
+				background-color: white;
+				display: none;
+				position: absolute;
+				left: calc(50% - 250px) ;
+				top: 100px;
+			}
+			.sign h1{
+				user-select : none;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="top">
+			<h1>点击弹出登录框</h1>
+		</div>
+		<div class="sign">
+			<h1>登录会员</h1>
+			<div><label>用户名：</label><input type="text"></div>
+			<div><label>密码：</label><input type="password"></div>
+			<div><a href="#">关闭</a></div>
+		</div>
+		<script>
+			var show = document.querySelector('.top');
+			var sign = document.querySelector('.sign');
+			var close_btn = document.querySelector(".sign a")
+			
+			show.onclick = function(){
+				document.body.style.backgroundColor = '#b2b2b2';
+				sign.style.display = 'block'
+			}
+			
+			close_btn.onclick = function(){
+				document.body.style.backgroundColor = '';
+				sign.style.display = 'none'
+			}
+			
+			var title = document.querySelector(".sign h1")
+			
+			title.onmousedown = function(e){
+				e = e || window.event;
+				var x = e.pageX - sign.offsetLeft;
+				var y = e.pageY - sign.offsetTop;
+				//console.log(x,y)
+				document.onmousemove = function (event){
+					event = event || window.event;
+					sign.style.left = event.pageX - x + "px"
+					sign.style.top = event.pageY - y + "px"
+				}
+				document.onmouseup = function(){
+					document.onmousemove = null;
+				}
+			}
+			
+			
+		</script>
+	</body>
+</html>

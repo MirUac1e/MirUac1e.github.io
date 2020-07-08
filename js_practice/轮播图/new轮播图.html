@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://cdn.staticfile.org/jquery/1.12.4/jquery.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        .box {
+            position: relative;
+            left: 100px;
+            top: 100px;
+            width: 1200px;
+            overflow: hidden;
+        }
+
+        .pic {
+            width: 6000px;
+            font-size: 0;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .pic li {
+            font-size: 20px;
+            float: left;
+            list-style: none;
+            font-size: 0px;
+        }
+
+        .pic img {
+            width: 1200px;
+            height: 400px;
+        }
+
+        .point {
+            overflow: hidden;
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+
+            -webkit-user-select: none;
+
+            -moz-user-select: none;
+
+            -ms-user-select: none;
+
+            user-select: none;
+
+        }
+
+        .point li {
+            width: 20px;
+            height: 20px;
+            text-align: center;
+            border-radius: 5px;
+            background-color: white;
+            list-style: none;
+            float: left;
+            margin: 5px;
+            cursor: pointer;
+        }
+
+        .point li.active {
+            background-color: aqua;
+            width: 40px;
+        }
+
+        .control {
+            overflow: hidden;
+            cursor: pointer;
+            display: none;
+        }
+
+        .control div {
+            position: absolute;
+            display: inline-block;
+        }
+
+        .control div:first-child {
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .control div:last-child {
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="box">
+        <ul class="pic">
+            <li><img src="./img/banner01.jpg" alt=""></li>
+            <li><img src="./img/banner02.jpg" alt=""></li>
+            <li><img src="./img/banner03.jpg" alt=""></li>
+            <li><img src="./img/banner04.jpg" alt=""></li>
+            <li><img src="./img/banner05.jpg" alt=""></li>
+        </ul>
+        <ul class="point">
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+        </ul>
+        <div class="control">
+            <div class="prev"><img src="./img/prev.png" alt=""></div>
+            <div class="next"><img src="./img/next.png" alt=""></div>
+        </div>
+    </div>
+    <script>
+        //1给每个图片，点加上编号
+        /* $('.pic li').attr('data-index', function (index) {
+            return index;
+        }) */
+        /* $('.point li').attr('data-index', function (index) {
+            return index;
+        }) */
+        //2封装成方法
+        /* function addIndex(element) {
+            $(element).attr('data-index', function (index) {
+                return index
+            })
+        } */
+        /* addIndex(".pic li")
+        addIndex('.point li') */
+        //3封装到jq中
+        $.fn.addIndex = function (element) {
+            $(element).attr('data-index', function (index) {
+                return index
+            })
+            return this
+        }
+        $('.pic li').addIndex(".pic li")
+        $('.point li').addIndex('.point li')
+
+
+        //找到当前点击的图片的编号
+        //$('.pic').children().first().attr('data-index')
+
+        //图片宽度 ， 轮播图每次移动的长度
+        var picWidth = $('.pic li').width()
+        //节流阀
+        var flag = true
+        //左 右移动
+        $('.control').click(function (e) {
+            var e = e || window.event
+            e = $(e.target).parent()
+            //把现在的图片移动到最后面
+            //移动整体
+            //移动一张图片的长度
+            /* $('.pic').animate({
+                left: -picWidth
+            }, function () {
+                $('.pic').children().first().appendTo($('.pic'))
+                $('.pic').css('left', 0)
+            }) */
+
+            //判断点击的是那个按钮
+            var e_class = e.attr('class')
+            //获取现在显示的图片
+            var firstPic = $('.pic').children().first()
+
+            if (flag == true) {
+                flag = false;
+                if (e_class == 'next') {
+                    //右
+                    //下一张图片的index
+                    var nextIndex = getIndex(firstPic, 1)
+                    if (nextIndex < $('.pic').children().length) {
+                        firstPic.after(getImage(nextIndex))
+                        $('.pic').animate({
+                            left: -picWidth
+                        }, function () {
+                            firstPic.parent().clearQueue()
+                            $('.pic').css('left', 0)
+                            firstPic.appendTo($('.pic'))
+                        })
+
+                    } else {
+                        nextIndex = 0;
+                        firstPic.after(getImage(nextIndex))
+                        $('.pic').animate({
+                            left: -picWidth
+                        }, function () {
+                            firstPic.parent().clearQueue()
+                            $('.pic').css('left', 0)
+                            firstPic.appendTo($('.pic'))
+                        })
+                    }
+                    flag = true
+                    //更新圆点
+                    $('.point li').each(function (index, element) {
+                        //console.log(index,element,getIndex($(element)))
+                        if (index == nextIndex) {
+                            $(element).addClass('active')
+                        } else {
+                            $(element).removeClass('active')
+                        }
+                    })
+                } else if (e_class == 'prev') {
+                    //左
+                    var nextIndex = getIndex(firstPic, -1)
+
+                    if (nextIndex == -1) {
+                        nextIndex = $('.pic').children().length - 1
+                        firstPic.before(getImage(nextIndex))
+                        $('.pic').css('left', -picWidth + "px").animate({
+                            left: 0
+                        }, function () {
+                            firstPic.parent().clearQueue()
+                        })
+
+                    } else {
+                        firstPic.before(getImage(nextIndex))
+                        $('.pic').css('left', -picWidth + "px").animate({
+                            left: 0
+                        }, function () {
+                            firstPic.parent().clearQueue()
+                        })
+                    }
+                    flag = true
+                    //更新圆点
+                    $('.point li').each(function (index, element) {
+                        //console.log(index,element,getIndex($(element)))
+                        if (index == nextIndex) {
+                            $(element).addClass('active')
+                        } else {
+                            $(element).removeClass('active')
+                        }
+                    })
+                } else {
+                    //BUG
+                    alert('erro')
+                }
+            }
+        })
+
+        //点击点事件
+        $('.point li').click(function () {
+            //存储现在第一张图片
+            var firstPic = $('.pic').children().first()
+            //获取圆点和第一张图片的data-index 
+            var x = getIndex($(this))
+            var y = getIndex(firstPic)
+            //判断圆点和图片的位置关系
+            //console.log(x, y, x > y)
+
+            if (x < y) {
+                firstPic.before(getImage(x)).parent().css('left', -picWidth).animate({
+                    left: 0
+                }, function () {
+                    firstPic.parent().clearQueue()
+                })
+            }
+            if (x > y) {
+                firstPic.after(getImage(x)).parent().animate({
+                    left: -picWidth
+                }, function () {
+                    $('.pic').children().first().appendTo($('.pic'))
+                    $('.pic').css({
+                        left: 0
+                    })
+                })
+            }
+            //更新圆点样式
+            $('.point li').each(function (index, element) {
+                //console.log(index,element,getIndex($(element)))
+                if (index == x) {
+                    $(element).addClass('active')
+                } else {
+                    $(element).removeClass('active')
+                }
+            })
+        })
+        //显示隐藏左右按钮
+        $('.box').hover(function(){
+            $('.control').css('display',"block")
+        },function(){
+            $('.control').css('display',"none")
+        })
+        //初始化圆点
+        $('.point li').each(function (index, element) {
+            //console.log(index,element,getIndex($(element)))
+            if (index == getIndex($('.pic').children().first())) {
+                $(element).addClass('active')
+            } else {
+                $(element).removeClass('active')
+            }
+        })
+        //获取元素下标
+        function getIndex(element, index) {
+            if (index == 1) {
+                //编号+1 找到下一张
+                return parseInt(element.attr('data-index')) + 1
+            } else if (index == -1) {
+                //编号-1 找到上一张
+                return parseInt(element.attr('data-index')) - 1
+            } else {
+                return element.attr('data-index')
+            }
+        }
+        //找到对应下标的图片
+        function getImage(n) {
+            return $('.pic ').children().filter(function () {
+                return $(this).attr('data-index') == n
+            })
+        }
+    </script>
+</body>
+
+</html>

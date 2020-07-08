@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="{CHARSET}">
+		<title></title>
+		<style>
+			*{
+				margin: 0;
+				padding: 0;
+			}
+			.box{
+				margin-left: 360px;
+				margin-top: 100px;
+				position: relative;
+			}
+			.box .leftbox{
+				width: 450px;
+				height: 450px;
+				border: 1px solid #eeeeee;
+			}
+			.box .rightbox{
+				width: 540px;
+				height: 540px;
+				border: 1px solid #eeeeee;
+				overflow: hidden;
+				position: absolute;
+				left: 451px;
+				top: 0;
+				display: none;
+			}
+			.box .leftbox .mask{
+				width: 300px;
+				height: 300px;
+				background: rgba(254,222,79,0.5);
+				position: absolute;
+				top: 0;
+				left: 0;
+				display: none;
+			}
+			.box .rightbox img{
+				position: absolute;
+			}
+			
+			
+			.select{
+				width: 450px;
+				height: 84px;
+				background: aqua;
+				overflow: hidden;
+			}
+			.select ul{
+				margin-top: 15px;
+			}
+			.select ul li {
+				list-style: none;
+				float: left;
+				margin-left: 8px;
+				margin-right: 8px;
+				
+			}
+
+			.select ul li img {
+				cursor: pointer;
+				
+				border: 2px solid transparent;
+				
+			}
+			/*去掉图片底部fengxi */
+			img{
+				vertical-align: bottom;
+			}
+			.select div:first-child{
+				margin-left: 55px;
+			}
+
+		</style>
+	</head>
+	<body>
+		<div class="box">
+			<div class="leftbox">
+				<img src="images/1_middle.jpg"/>
+				<div class="mask"></div>
+			</div>
+			<div class="rightbox">
+				<img src="images/1_big.jpg"/>
+			</div>
+			<div class="select">
+				<ul>
+					<li><img src="images/1_small.jpg" class="select_select" /></li>
+					<li><img src="images/2_small.jpg" style="" /></li>
+					<li><img src="images/3_small.jpg" /></li>
+					<li><img src="images/4_small.jpg" /></li>
+					<li><img src="images/5_small.jpg" /></li>
+					<li><img src="images/6_small.jpg" /></li>
+				</ul>
+
+			</div>
+		</div>
+		<script>
+			var box = document.querySelector('.box')
+			var leftbox = document.querySelector('.leftbox');
+			var smallbox_img = document.querySelector(".leftbox img")
+			var mask = document.querySelector('.mask');
+			
+			var rightbox = document.querySelector('.rightbox');
+			var img = document.querySelector('.rightbox img')
+
+			//1.移上leftbox后显示rightbox和遮罩层
+			leftbox.onmouseover = function(){
+				rightbox.style.display = 'block'
+				mask.style.display = 'block'
+			}
+			//2.移出leftbox后隐藏rightbox和遮罩层
+			leftbox.onmouseout = function(){
+				rightbox.style.display = 'none'
+				mask.style.display = 'none'
+			}
+			//3.鼠标在leftbox移动，遮罩层跟随鼠标移动，鼠标在遮罩层中心
+			leftbox.onmousemove = function(e){
+				e = e || window.event;
+				//console.log(e.offsetX,e.offsetY)
+				//console.log(e.pageX-box.offsetLeft,e.pageY-box.offsetTop)
+				var x = e.pageX-box.offsetLeft-mask.offsetWidth/2;
+				var y = e.pageY-box.offsetTop-mask.offsetHeight/2;
+				//4.鼠标在leftbox移动时，遮罩层不超出边界
+				if( x < 0 ){
+					x = 0
+				}
+				if( y < 0 ){
+					y = 0
+				}
+				if( x >leftbox.offsetWidth - mask.offsetWidth){
+					x = leftbox.offsetWidth - mask.offsetWidth
+				}
+				if( y >leftbox.offsetHeight - mask.offsetHeight){
+					y = leftbox.offsetHeight - mask.offsetHeight
+				}
+				mask.style.left = x + 'px';
+				mask.style.top = y + 'px';
+				//大图片的移动距离= 小图片距离*大图片最大移动距离/小图片最大移动距离
+				//大图片的移动距离 = 大图片宽度 - div宽度
+				var x2 = ( x*( img.offsetWidth - rightbox.offsetWidth ) )/( leftbox.offsetWidth - mask.offsetWidth );
+				var y2 = ( y*( img.offsetHeight - rightbox.offsetHeight ) )/( leftbox.offsetHeight - mask.offsetHeight );
+				
+				img.style.left = -x2 + 'px';
+				img.style.top = -y2 + 'px';
+				
+			}
+			//选中图片，转换样式
+			var img_select = document.querySelectorAll('.select img');
+			img_select[0].className = "select_select";
+			for(var i = 0 ;i < img_select.length;i++){
+				img_select[i].setAttribute('data-index',i+1)
+				img_select[i].onclick = function(){
+					for(var j = 0 ;j < img_select.length;j++){
+						img_select[j].style= ''
+					}
+					this.style = "border: 2px solid red;";
+					//修改图片
+					//console.log(this.getAttribute('data-index'))
+					smallbox_img.src = "images/"+this.getAttribute('data-index')+"_middle.jpg"
+					img.src = "images/"+this.getAttribute('data-index')+"_big.jpg"
+				}
+			}
+		</script>
+	</body>
+</html>
